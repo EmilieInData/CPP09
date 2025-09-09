@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 14:57:26 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/04 19:13:16 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/09 16:12:35 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,9 @@
 #include <cmath>
 #include <algorithm>
 #include <cctype>
-// #include <exception>
+#include <exception>
 #include <map>
 #include <sstream>
+#include <ctime>
 
 #endif

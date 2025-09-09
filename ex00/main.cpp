@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 16:11:25 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/04 19:24:16 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/09 15:36:24 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,9 @@ int main(int av, char **ac)
 		file.close();
 		return (1);
 	}
-	be.saveInput(file);
+	be.checkInput(file);
 	file.close();
+	// for (std::map<std::string, std::string>::const_iterator it = be.getInput().begin(); it != be.getInput().end(); it++)
+	// 	be.checkDates(it->first);
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 17:49:17 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/04 20:12:41 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/09 19:23:40 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,12 +35,25 @@ BitcoinExchange  BitcoinExchange::operator=(const BitcoinExchange& other)
 	if (this != &other)
 	{
 		this->_data = other._data;
-		this->_it = other._it;
+		this->_itData = other._itData;
+		// this->_input = other._input;
+		// this->_itInput = other._itInput;
 	}
 	else
 		std::cout << ERROR << PINK << " Error: you're trying to assign a class to itself\n" << RESET;
 	return (*this);
 }
+
+
+std::map<std::string, double> const&	BitcoinExchange::getData()const
+{
+	return _data;
+}
+
+// std::map<std::string, std::string> const&	BitcoinExchange::getInput()const
+// {
+// 	return _input;
+// }
 
 void    BitcoinExchange::saveData(std::ifstream& file)
 {
@@ -55,21 +68,26 @@ void    BitcoinExchange::saveData(std::ifstream& file)
 		std::size_t found = line.find(",");
 		if (found == std::string::npos)
 			continue;
-		
 		date = line.substr(0, found);
 		std::istringstream(line.substr(found + 1)) >> rate;
 		_data[date] = rate;
 		// _itData = _data.find(date);
 		// std::cout << PURPLE << std::fixed << std::setprecision(2) << _itData->first << " : " << _itData->second << std::endl;
 	}
+	// 2022-01-09,41864.44
 	return ;    
 }
+// for (size_t i = 0; i < line.length(); i++)
+// {
+// 	if (!isdigit(line[i]) && line[i] != '.' && line[i] != '-' && line[i] != ',')
+// 		continue;
+// }
 
 void	BitcoinExchange::removeSpaces(std::string& line)
 {
 	line.erase(std::remove_if(line.begin(), line.end(), (int(*)(int))std::isspace), line.end());
 }
-bool	BitcoinExchange::checkLetters(std::string& line)
+bool	BitcoinExchange::checkLetters(std::string const& line)
 {
 	for (size_t i = 0; i < line.length(); i++)
 	{
@@ -79,7 +97,7 @@ bool	BitcoinExchange::checkLetters(std::string& line)
 	return false;
 }
 
-void BitcoinExchange::saveInput(std::ifstream& file)
+void BitcoinExchange::checkInput(std::ifstream& file)
 {
 	std::string	line;
 	std::string	date;
@@ -106,81 +124,118 @@ void BitcoinExchange::saveInput(std::ifstream& file)
 			date = line.substr(0, found);
 			value = line.substr(found + 1);
 		}
-		_file[date] = value;
-		// _it = _file.find(date);
-		// std::cout << PURPLE << _it->first << " : " << _it->second << std::endl;
+		try
+		{
+			checkDate(date);
+			checkValue(value);
+			doCalcul(date, value);
+		}
+		catch(const std::exception& e)
+		{
+			std::cerr << e.what() << '\n';
+			continue;
+		}
+		std::cout << BLUE << date << " => " << value << " = \n";
+				//   << GREEN << result operation << RESET << std::endl;
 	}
-	
 	return ; 
 }
 
-bool	BitcoinExchange::checkDates(std::string& date)
+void	BitcoinExchange::checkDate(std::string const& date)
 {
-	int		d;
-	int		m;
-	int		y;
-	char	c = '-';
-	int		tmp;
+	int	day;
+	int	month;
+	int	year;
+	int	array[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 	
-	for (size_t i = 1; i < date.length(); i++)
+	if (date.length() != 10)
+		throw std::runtime_error("Error: bad input => " + date);
+	for (size_t i = 0; i < date.length(); i++)
 	{
-		//checker que des chiffres
-		if (date[i] == c)
+		if (!isdigit(date[i]))
 		{
-			y = (int)date.substr(0, c);
-			tmp = i;
+			if ((i != 4 && i != 7) || ((i == 4 || i == 7) && date[i] != '-'))
+				throw std::runtime_error("Error: bad input => " + date);
 		}
-		if (date[i] == c)
-		{
-			m = (int)date.substr(i, c);	
 	}
-		return false;
-
-	//checker aue la date est correct, elle existe	
-	return true;
+	std::stringstream(date.substr(0, 4)) >> year;
+	std::stringstream(date.substr(5, 2)) >> month;
+	std::stringstream(date.substr(8, 2)) >> day;
+	// std::cout << "Year: " << year << ", Month: " << month << ", Day: " << day << std::endl;
 	
-	2011-01-03
+    if (date < _data.begin()->first|| date > today() || month < 1 || month > 12 || day < 1)
+		throw std::runtime_error("Error: bad input => " + date);
+	
+	if (leapYear(year))
+		array[1] = 29;
+	if (day > array[month - 1])
+		throw std::runtime_error("Error: bad input => " + date);
+	return;	
 }
 
-// bool isLeapYear(int year) {
-//     return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
-// }
+bool	BitcoinExchange::leapYear(int year)
+{
+	if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))
+		return true;
+	return false;
+}
 
-// bool isValidDate(const std::string& dateStr) {
-//     int day, month, year;
-//     char sep1, sep2;
+std::string	BitcoinExchange::today()
+{
+	std::stringstream	date;
+    std::time_t 		t = std::time(0); // time in second since 1970/01/01
+    std::tm* 			now = std::localtime(&t); // struct with year, month, day, sec..
 
-//     std::istringstream ss(dateStr);
-//     if (!(ss >> day >> sep1 >> month >> sep2 >> year)) return false;
-//     if (sep1 != '/' || sep2 != '/') return false;
+    int year  = now->tm_year + 1900; //computer begin in 1900 , 2025 = 125
+    int month = now->tm_mon + 1;	 //0 -> january, 11->december
+    int day   = now->tm_mday;
 
-//     if (year < 0 || month < 1 || month > 12 || day < 1) return false;
+    date << year << "-" << std::setw(2) << std::setfill('0')
+		 << month << "-" << std::setw(2) << std::setfill('0')
+		 << day;
 
-//     int daysInMonth[] = {31, (isLeapYear(year) ? 29 : 28), 31, 30, 31, 30,
-//                          31, 31, 30, 31, 30, 31};
+	// std::cout << PINK << "TODAY: " << date.str() << RESET << std::endl; //TO BORROW
+    return date.str();
+}
 
-//     return day <= daysInMonth[month - 1];
-// }
+void	BitcoinExchange::checkValue(std::string const& value)
+{
+	double	num;
+	bool	flag = false;
+	
+	if (value.empty())
+		throw std::runtime_error("Error: value is missing");
+	if (value[0] == '-')
+		throw std::runtime_error("Error: value is not a positive number => " + value);
+	for (size_t i = 0; i < value.length(); i++)
+	{
+		if (value[i] < '0' || value[i] > '9')
+		{
+			if (value[i] == '.' && flag == false)
+				flag = true;
+			else
+				throw std::runtime_error("Error: value is not a number => " + value);
+		}
+	}
+	num = atof(value.c_str());
+	if (num >= 1000)
+		throw std::runtime_error("Error: value is too large => " + value);
+	if (num <= 0)
+		throw std::runtime_error("Error: value is too small => " + value);
+	return;
+}
 
-// bool	BitcoinExchange::checkValues(std::string& value)
-// {
-// 	if (checkLetters(value))
-// 		return false;
-		
-// 	return true;
+double	BitcoinExchange::doCalcul(std::string const& date, std::string const& value)
+{
+	
+	//faire une boucle pour chercher la date si pas trouver la plus petite, donc boucle on check
+	//que la value sauvee n'est pas au dessus de la value cherchee
 
-// -1.2
-// }
+	//faire le calcul et imprimer le resultat ou le message d'erreur
+}
 
-//faire une boucle pour chercher la date si pas trouver la plus petite, donc boucle on check
-//que la value sauvee n'est pas au dessus de la value cherchee
 
-//verifier si format date ok
-//transformer la value en int ou float et verifier le format (entre 0  1000 non inclus etc)
 
-//faire le calcul et imprimer le resultat ou le message d'erreur
-
-//la boucle se finit quand le fichier est entierement lu
 
 // --> to know <--
 // << std::fixed << std::setprecision(2) , pour imprimer les float/double 
