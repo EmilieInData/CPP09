@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   BitcoinExchange.cpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 17:49:17 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/09 19:23:40 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/15 23:41:12 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,45 +15,36 @@
 
 BitcoinExchange::BitcoinExchange()
 {
-	std::cout << PURPLE << "Default constructor called\n" << RESET;
+	std::cout << BLUE << "Default constructor called\n" << RESET;
 }
 
 BitcoinExchange::~BitcoinExchange()
 {
-	std::cout << PURPLE << "Default destructor called\n" << RESET;    
+	std::cout << BLUE << "Default destructor called\n" << RESET;
 }
 
 BitcoinExchange::BitcoinExchange(const BitcoinExchange& other)
 {
 	*this = other;
-	std::cout << PURPLE << "Copy constructor called\n" << RESET;    
+	std::cout << BLUE << "Copy constructor called\n" << RESET;
 }
 
-   
 BitcoinExchange  BitcoinExchange::operator=(const BitcoinExchange& other)
 {
 	if (this != &other)
 	{
 		this->_data = other._data;
 		this->_itData = other._itData;
-		// this->_input = other._input;
-		// this->_itInput = other._itInput;
 	}
 	else
 		std::cout << ERROR << PINK << " Error: you're trying to assign a class to itself\n" << RESET;
 	return (*this);
 }
 
-
 std::map<std::string, double> const&	BitcoinExchange::getData()const
 {
 	return _data;
 }
-
-// std::map<std::string, std::string> const&	BitcoinExchange::getInput()const
-// {
-// 	return _input;
-// }
 
 void    BitcoinExchange::saveData(std::ifstream& file)
 {
@@ -74,19 +65,14 @@ void    BitcoinExchange::saveData(std::ifstream& file)
 		// _itData = _data.find(date);
 		// std::cout << PURPLE << std::fixed << std::setprecision(2) << _itData->first << " : " << _itData->second << std::endl;
 	}
-	// 2022-01-09,41864.44
 	return ;    
 }
-// for (size_t i = 0; i < line.length(); i++)
-// {
-// 	if (!isdigit(line[i]) && line[i] != '.' && line[i] != '-' && line[i] != ',')
-// 		continue;
-// }
 
 void	BitcoinExchange::removeSpaces(std::string& line)
 {
 	line.erase(std::remove_if(line.begin(), line.end(), (int(*)(int))std::isspace), line.end());
 }
+
 bool	BitcoinExchange::checkLetters(std::string const& line)
 {
 	for (size_t i = 0; i < line.length(); i++)
@@ -102,6 +88,8 @@ void BitcoinExchange::checkInput(std::ifstream& file)
 	std::string	line;
 	std::string	date;
 	std::string	value;
+	double		double_value;
+	double		result;
 	bool		firstLine = true;
 	
 	while (getline(file, line))
@@ -127,16 +115,16 @@ void BitcoinExchange::checkInput(std::ifstream& file)
 		try
 		{
 			checkDate(date);
-			checkValue(value);
-			doCalcul(date, value);
+			double_value = checkValue(value);
+			result = doCalcul(date, double_value);
 		}
 		catch(const std::exception& e)
 		{
-			std::cerr << e.what() << '\n';
+			std::cerr << PURPLE << e.what() << RESET << '\n';
 			continue;
 		}
-		std::cout << BLUE << date << " => " << value << " = \n";
-				//   << GREEN << result operation << RESET << std::endl;
+		std::cout  << BLUE << date << " => " << value << " = "
+				   << GREEN << result << RESET << std::endl;
 	}
 	return ; 
 }
@@ -161,7 +149,6 @@ void	BitcoinExchange::checkDate(std::string const& date)
 	std::stringstream(date.substr(0, 4)) >> year;
 	std::stringstream(date.substr(5, 2)) >> month;
 	std::stringstream(date.substr(8, 2)) >> day;
-	// std::cout << "Year: " << year << ", Month: " << month << ", Day: " << day << std::endl;
 	
     if (date < _data.begin()->first|| date > today() || month < 1 || month > 12 || day < 1)
 		throw std::runtime_error("Error: bad input => " + date);
@@ -170,7 +157,7 @@ void	BitcoinExchange::checkDate(std::string const& date)
 		array[1] = 29;
 	if (day > array[month - 1])
 		throw std::runtime_error("Error: bad input => " + date);
-	return;	
+	return;
 }
 
 bool	BitcoinExchange::leapYear(int year)
@@ -194,11 +181,10 @@ std::string	BitcoinExchange::today()
 		 << month << "-" << std::setw(2) << std::setfill('0')
 		 << day;
 
-	// std::cout << PINK << "TODAY: " << date.str() << RESET << std::endl; //TO BORROW
     return date.str();
 }
 
-void	BitcoinExchange::checkValue(std::string const& value)
+double	BitcoinExchange::checkValue(std::string const& value)
 {
 	double	num;
 	bool	flag = false;
@@ -222,22 +208,19 @@ void	BitcoinExchange::checkValue(std::string const& value)
 		throw std::runtime_error("Error: value is too large => " + value);
 	if (num <= 0)
 		throw std::runtime_error("Error: value is too small => " + value);
-	return;
+	return num;
 }
 
-double	BitcoinExchange::doCalcul(std::string const& date, std::string const& value)
+double	BitcoinExchange::doCalcul(std::string const& date,double value)
 {
-	
-	//faire une boucle pour chercher la date si pas trouver la plus petite, donc boucle on check
-	//que la value sauvee n'est pas au dessus de la value cherchee
-
-	//faire le calcul et imprimer le resultat ou le message d'erreur
+	for (_itData = _data.begin(); _itData->first <= date; _itData++)
+	{
+		if (_itData->first == date)
+			return _itData->second * value;
+	}
+	--_itData;
+	return _itData->second * value;
 }
 
-
-
-
-// --> to know <--
-// << std::fixed << std::setprecision(2) , pour imprimer les float/double 
-
-// if (std::isnan(x))
+// << std::fixed << std::setprecision(2) , to print float/double 
+// if (std::isnan(x)), not a number

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   BitcoinExchange.hpp                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:25:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/09 18:33:39 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/15 23:22:16 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,10 +31,10 @@ class BitcoinExchange
 		bool			checkLetters(std::string const& line);
 		void			checkInput(std::ifstream& file);
 		void			checkDate(std::string const& date);
-		void			checkValue(std::string const& value);
+		double			checkValue(std::string const& value);
 		bool 			leapYear(int year);
 		std::string		today();
-		double			doCalcul(std::string const& date, std::string const& value);
+		double			doCalcul(std::string const& date, double value);
 
 
 	private:
