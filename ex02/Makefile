@@ -1,13 +1,13 @@
-NAME = RPN
+NAME = PmergeMe
 
 CC = c++
 
 FLAGS = -Wall -Wextra -Werror -MMD -MP -std=c++98 -pedantic -fsanitize=address -fsanitize=leak
 
-HEADER = RPN.hpp Common.hpp
+HEADER = PmergeMe.hpp Common.hpp
 
 SRC = 	main.cpp \
-		RPN.cpp
+		PmergeMe.cpp
 
 OBJDIR = Build
 

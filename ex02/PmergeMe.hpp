@@ -1,35 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   RPN.hpp                                            :+:      :+:    :+:   */
+/*   PmergeMe.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:25:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/16 01:23:21 by marvin           ###   ########.fr       */
+/*   Updated: 2025/09/18 19:17:54 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef RPN_HPP
-#define RPN_HPP
+#ifndef PMERGEME_HPP
+#define PMERGEME_HPP
 
 #include "Common.hpp"
 
-class RPN
+class PmergeMe
 {
 	public:
-		RPN();
-		~RPN();
-		RPN(const RPN& other);
-		RPN	operator=(const RPN& other);
+		PmergeMe();
+		~PmergeMe();
+		PmergeMe(const PmergeMe& other);
+		PmergeMe	operator=(const PmergeMe& other);
 
-		int		doCalcul(char sign);
-		void	fillStack(std::string const& str);
-		int		checkInt(char c);
-		char	checkOperator(char c);
+		void	checkArgs(char** av);
+		void	printVector();
 
 	private:
-		std::stack<int, std::vector<int> >	_data;
+		std::vector<int>			_vData;
+		std::vector<int>::iterator	_vIt;
+		std::clock_t				_vTiming;
+				
+		std::deque<int>				_dData;
+		std::vector<int>::iterator	_dIt;
+		std::clock_t				_dTiming;
 };
 
 #endif
