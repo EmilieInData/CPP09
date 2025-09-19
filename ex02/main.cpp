@@ -6,7 +6,7 @@
 /*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/29 16:11:25 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/18 17:57:23 by esellier         ###   ########.fr       */
+/*   Updated: 2025/09/19 14:54:56 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,17 @@ int main(int ac, char **av)
 		return (1);
 	}
 	
-	PmergeMe					merge;
-		
+	PmergeMe	merge;
+
 	try
 	{
 		merge.checkArgs(av);
+		merge.setVectorTiming();
+		merge.doVector(2);
+		printMessage(merge, av, ac - 1, merge.getVector(), "std::vector<int>", merge.getVectorTiming());
+		merge.setDequeTiming();
+		//merge.doDeque(2)
+		printMessage(merge, av, ac - 1, merge.getDeque(), "std::deque<int>", merge.getDequeTiming());
 	}
 	catch(const std::exception& e)
 	{
