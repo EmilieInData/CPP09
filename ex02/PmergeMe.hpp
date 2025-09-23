@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   PmergeMe.hpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
+/*   By: esellier <esellier@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:25:59 by esellier          #+#    #+#             */
-/*   Updated: 2025/09/23 01:06:11 by marvin           ###   ########.fr       */
+/*   Updated: 2025/09/23 16:33:43 by esellier         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,12 +32,14 @@ class PmergeMe
 
 		void						checkArgs(char** av);
 		void 						doVector(size_t size);
+		void						fillData(std::vector<Arg> &sorted, std::vector<int>& remain);
 		std::vector<Arg>::iterator	doBinarySearch(int n, size_t pair_size, std::vector<Arg>::iterator it, std::vector<Arg>& sorted);
-		void						erasePendingArgs(int n, size_t pair_size, std::vector<Arg>& pending, std::vector<Arg>& sorted);
+		void						movePendingArgs(int n, size_t pair_size, std::vector<Arg>& pending, std::vector<Arg>& sorted);
 		std::vector<Arg>::iterator	searchPendingArg(int n, std::vector<Arg>& pending);
 		void						printVector();
 		double						calculTime(std::clock_t timer);
 		int							doJacobsthal(int n1, int n);
+		void						isSorted();
 
 	private:
 		std::vector<int>			_vData;
